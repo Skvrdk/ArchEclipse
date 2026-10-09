@@ -5,7 +5,8 @@ hyprdir=$HOME/.config/hypr
 monitor=$1
 wallpaper=$2 # This is passed as an argument to the script
 
-case $wallpaper in */wallpaper-engine/*) exec "$hyprdir/wallpaper-daemon/wpe.sh" run "$monitor" "$wallpaper" ;; esac
+case $wallpaper in */wallpaper-engine/*) hyprctl hyprpaper wallpaper "$monitor,$wallpaper" >/dev/null # its preview fills in while the live one loads
+    exec "$hyprdir/wallpaper-daemon/wpe.sh" run "$monitor" "$wallpaper" ;; esac
 # Stop any running mpvpaper instance on this monitor when switching to static wallpaper
 # (kill first: fast, avoids a 1s stale video under the new static wallpaper)
 for pid in $(pgrep -x mpvpaper); do

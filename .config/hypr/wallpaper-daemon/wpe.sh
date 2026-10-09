@@ -28,7 +28,7 @@ run)
     # Keep whatever is showing until the new wallpaper has its layer and first frame, so a switch never flashes the static one.
     sleep 0.3; new=$(pgrep -nx linux-wallpaper)
     for _ in $(seq 80); do hyprctl layers | grep -q "linux-wallpaperengine, pid: $new" && break; sleep 0.25; done
-    sleep 0.7
+    sleep 1 # the new layer is black for ~0.3 s before its first frame; keep the old one until then
     kill $old 2>/dev/null; pkill -x mpvpaper; pkill -x papertoy
     "$HOME/.config/hypr/theme/scripts/wal-theme.sh" "$3" >/dev/null 2>&1 ;;
 esac
