@@ -16,6 +16,17 @@ local function fullscreen(w) -- a fullscreen game must stay as it is
     return f == true or (type(f) == "number" and f > 0)
 end
 
+-- Apps that draw their own window buttons get no pill (substrings of the window class, lowercase). Add more here.
+local own_buttons = { "steam", "spotify", "zen_browser", "firefox", "chrom", "brave", "discord", "vesktop", "telegram", "obsidian", "vinegarhq", "org.gnome.", "code" }
+
+local function draws_own_buttons(w)
+    local class = string.lower(tostring(w.class))
+    for _, part in ipairs(own_buttons) do
+        if string.find(class, part, 1, true) then return true end
+    end
+    return false
+end
+
 -- Hyprland draws no title bars here, so a Quickshell layer puts the buttons on each floating window.
 -- This pushes the windows' geometry to it ~30 times a second (written only when something changed).
 local function emit_windows()
@@ -24,7 +35,7 @@ local function emit_windows()
     if mon.active_special_workspace then visible[tostring(mon.active_special_workspace.name)] = true end
     local items = {}
     for _, w in ipairs(hl.get_windows()) do
-        if w.mapped and w.floating and w.fullscreen ~= 2 and w.workspace and visible[tostring(w.workspace.name)] then
+        if w.mapped and w.floating and w.fullscreen ~= 2 and not draws_own_buttons(w) and w.workspace and visible[tostring(w.workspace.name)] then
             items[#items + 1] = string.format('{"a":"%s","x":%d,"y":%d,"w":%d,"h":%d}', tostring(w.address), w.at.x, w.at.y, w.size.x, w.size.y)
         end
     end
