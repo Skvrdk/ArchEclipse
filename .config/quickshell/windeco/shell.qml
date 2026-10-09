@@ -36,6 +36,25 @@ ShellRoot {
         onTriggered: feed.reload()
     }
 
+    // Drag helper (drag.py): moves the window itself and reports each position, which the strip follows in the same frame.
+    property string dragAddr: ""
+    property int dragX: 0
+    property int dragY: 0
+    Process {
+        id: helper
+        command: ["python3", "-I", Quickshell.env("HOME") + "/.config/quickshell/windeco/drag.py"]
+        running: true
+        stdinEnabled: true
+        stdout: SplitParser {
+            onRead: line => {
+                const p = line.split(" ");
+                root.dragAddr = p[0];
+                root.dragX = parseInt(p[1]);
+                root.dragY = parseInt(p[2]);
+            }
+        }
+    }
+
     function hypr(dispatch) {
         Quickshell.execDetached(["hyprctl", "dispatch", dispatch]);
     }
@@ -48,14 +67,10 @@ ShellRoot {
             required property string modelData
             readonly property var g: root.geo[modelData] ?? ({ x: 0, y: 100, w: 200, h: 100, t: "", f: false })
             readonly property string sel: "address:" + modelData
-            // While dragging, the strip stays put (the pointer grab reports positions relative to it) and only the window moves.
-            property bool dragging: false
-            property int frozenX: 0
-            property int frozenY: 0
             anchors { top: true; left: true }
             margins {
-                left: strip.dragging ? strip.frozenX : Math.max(0, strip.g.x)
-                top: strip.dragging ? strip.frozenY : Math.max(0, strip.g.y - 32)
+                left: Math.max(0, root.dragAddr === strip.modelData ? root.dragX : strip.g.x)
+                top: Math.max(0, (root.dragAddr === strip.modelData ? root.dragY : strip.g.y) - 30)
             }
             implicitWidth: Math.max(120, strip.g.w)
             implicitHeight: 30
@@ -65,12 +80,23 @@ ShellRoot {
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
             WlrLayershell.namespace: "windeco"
 
-            Rectangle {
+            Item {
                 anchors.fill: parent
-                radius: 12
-                color: strip.g.f ? "#f22a2140" : "#e61c1720"
-                border.color: strip.g.f ? "#cc9672da" : "#4d9672da"
-                border.width: 1
+                // Same colour and border as the window's top edge; the bottom half is square so strip and window read as one piece.
+                Rectangle {
+                    anchors.fill: parent
+                    radius: 12
+                    color: strip.g.f ? "#f22a2140" : "#e61c1720"
+                    border.color: strip.g.f ? "#cc9672da" : "#4d9672da"
+                    border.width: 1
+                }
+                Rectangle {
+                    anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
+                    height: 13
+                    color: strip.g.f ? "#f22a2140" : "#e61c1720"
+                    Rectangle { anchors { left: parent.left; top: parent.top; bottom: parent.bottom } width: 1; color: strip.g.f ? "#cc9672da" : "#4d9672da" }
+                    Rectangle { anchors { right: parent.right; top: parent.top; bottom: parent.bottom } width: 1; color: strip.g.f ? "#cc9672da" : "#4d9672da" }
+                }
 
                 Text {
                     anchors { left: parent.left; right: buttons.left; verticalCenter: parent.verticalCenter; leftMargin: 14; rightMargin: 8 }
@@ -83,48 +109,16 @@ ShellRoot {
 
                 // Drag area: the whole strip behind the title and the buttons.
                 MouseArea {
-                    id: dragArea
                     anchors.fill: parent
-                    property real startX: 0
-                    property real startY: 0
-                    property real winX: 0
-                    property real winY: 0
-                    property var pending: null
-                    onPressed: mouse => {
-                        strip.frozenX = Math.max(0, strip.g.x);
-                        strip.frozenY = Math.max(0, strip.g.y - 32);
-                        strip.dragging = true;
-                        startX = mouse.x;
-                        startY = mouse.y;
-                        winX = strip.g.x;
-                        winY = strip.g.y;
+                    onPressed: {
                         root.hypr('hl.dsp.focus({ window = "' + strip.sel + '" })');
-                    }
-                    onPositionChanged: mouse => {
-                        if (!pressed)
-                            return;
-                        pending = { x: Math.round(winX + mouse.x - startX), y: Math.round(winY + mouse.y - startY) };
-                        sendTimer.start();
+                        helper.write("start " + strip.modelData + " " + Math.round(strip.g.x) + " " + Math.round(strip.g.y) + "\n");
                     }
                     onReleased: {
-                        sendTimer.stop();
-                        flush();
-                        strip.dragging = false;
+                        helper.write("stop\n");
+                        root.dragAddr = "";
                     }
                     onDoubleClicked: root.hypr('hl.dsp.window.fullscreen({ action = "toggle", mode = "maximized", window = "' + strip.sel + '" })')
-                    function flush() {
-                        if (!pending)
-                            return;
-                        root.hypr('hl.dsp.window.move({ x = ' + pending.x + ', y = ' + pending.y + ', window = "' + strip.sel + '" })');
-                        pending = null;
-                    }
-                    // at most ~60 moves a second: each one is a hyprctl call
-                    Timer {
-                        id: sendTimer
-                        interval: 16
-                        repeat: true
-                        onTriggered: dragArea.flush()
-                    }
                 }
 
                 Row {
