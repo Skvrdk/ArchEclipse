@@ -10,4 +10,6 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hypridle")
     -- Gamepad as mouse and shell control; quiet while a game is focused (see the script's header).
     hl.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/gamepad-desktop.py")
+    -- New Steam Workshop wallpapers show up in the Super+W panel (category wallpaper-engine).
+    hl.exec_cmd(os.getenv("HOME") .. "/.config/hypr/wallpaper-daemon/wpe.sh sync")
 end)

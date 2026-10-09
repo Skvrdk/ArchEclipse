@@ -14,7 +14,7 @@ if [[ $where == screen ]]; then
     hyprctl eval "hl.config({ debug = { damage_tracking = $damage }, decoration = { screen_shader = '$file' } })" >/dev/null
 else
     pick=$(list $d/wall | menu wallpaper) || exit 0
-    pkill -x papertoy
+    pkill -x papertoy; pkill -x linux-wallpaper
     [[ $pick == off || ! -f $d/wall/$pick.glsl ]] && exit 0
     # shim: papertoy would otherwise sit below the bar's reserved area (see scripts-c/zone-1.c)
     LD_PRELOAD=$HOME/.config/hypr/scripts-c/zone-1.so setsid papertoy --frame-rate 30 "$d/wall/$pick.glsl" >/dev/null 2>&1 &

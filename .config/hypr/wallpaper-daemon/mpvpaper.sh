@@ -13,6 +13,8 @@ fi
 # unload any existing wallpaper on this monitor (hyprpaper 0.8+ no longer requires unload)
 # hyprctl hyprpaper unload "$monitor" >/dev/null 2>&1
 
+pkill -x linux-wallpaper # a Wallpaper Engine wallpaper was showing
+
 # Stop any existing mpvpaper instance on this monitor
 for pid in $(pgrep -x mpvpaper); do
     if tr '\0' ' ' < "/proc/$pid/cmdline" | grep -F -q "$monitor"; then
