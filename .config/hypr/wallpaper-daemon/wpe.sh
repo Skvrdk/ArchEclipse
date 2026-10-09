@@ -1,7 +1,7 @@
 #!/bin/bash
 # Wallpaper Engine wallpapers through linux-wallpaperengine.
-#   wpe.sh sync              mirror each Steam workshop wallpaper as "Title [id].jpg" into ~/.config/wallpapers/wallpaper-engine
-#                            (the wallpaper panel lists that folder; hyprpaper.sh hands such files to `run`)
+#   wpe.sh sync              mirror each Steam workshop wallpaper as "Title [id].jpg" into ~/.config/wallpapers/wallpaper-engine/<type>
+#                            (scene|video|web: the wallpaper panel makes one category per folder; hyprpaper.sh hands such files to `run`)
 #   wpe.sh run MONITOR FILE  start the wallpaper behind FILE (its id is in the name)
 steam=/run/media/pisun/Game/Steam/steamapps # shortcut: this machine's Steam library, change it for another one
 dir=$HOME/.config/wallpapers/wallpaper-engine
@@ -10,10 +10,12 @@ sync)
     mkdir -p "$dir"
     for p in "$steam"/workshop/content/431960/*/; do
         id=$(basename "$p")
-        compgen -G "$dir/*\[$id\].jpg" >/dev/null && continue
+        compgen -G "$dir/*/*\[$id\].jpg" >/dev/null && continue
         title=$(jq -r '.title // empty' "$p/project.json" 2>/dev/null | tr -d '/\\:*?"<>|[]' | cut -c1-60)
         src=$(ls "$p"preview.* 2>/dev/null | head -1)
-        [ -n "$src" ] && magick "$src[0]" "$dir/${title:-wallpaper} [$id].jpg"
+        type=$(jq -r '.type // "other" | ascii_downcase' "$p/project.json" 2>/dev/null)
+        mkdir -p "$dir/${type:-other}"
+        [ -n "$src" ] && magick "$src[0]" "$dir/${type:-other}/${title:-wallpaper} [$id].jpg"
     done ;;
 run)
     id=$(sed -E 's/.*\[([0-9]+)\]\.[a-z]+$/\1/' <<<"$3")
