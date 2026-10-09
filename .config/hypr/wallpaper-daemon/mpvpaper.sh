@@ -23,7 +23,7 @@ done
 # Start mpvpaper in background for animated/video wallpapers
 nohup mpvpaper -p -o "no-audio --loop --fs --panscan=1.0 --hwdec=auto-safe" "$monitor" "$wallpaper" >/dev/null 2>&1 &
 
-sleep 0.8; pkill -x linux-wallpaper # a Wallpaper Engine wallpaper was showing; killed after mpv is up
+sleep 0.8; pkill -x linux-wallpaper; pkill -x papertoy # Wallpaper Engine / shader wallpaper was showing; killed after mpv is up
 
 sleep 0.3 # Brief settle to avoid stuttering (was 1s: dominated switch latency)
 

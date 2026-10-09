@@ -21,7 +21,7 @@ sync)
 run)
     id=$(sed -E 's/.*\[([0-9]+)\]\.[a-z]+$/\1/' <<<"$3")
     [ -d "$steam/workshop/content/431960/$id" ] || exit 1
-    pgrep -af "linux-wallpaperengine.*--bg .*/$id\$" >/dev/null && exit 0 # already showing it (workspace switches call this again)
+    pgrep -af "linux-wallpaperengine.*--bg .*/$id\$" >/dev/null && { pkill -x papertoy; pkill -x mpvpaper; exit 0; } # already showing it (workspace switches call this again)
     old=$(pgrep -x linux-wallpaper)
     setsid linux-wallpaperengine --silent --no-audio-processing --fps 30 --assets-dir "$steam/common/wallpaper_engine/assets" \
         --screen-root "$2" --bg "$steam/workshop/content/431960/$id" >/dev/null 2>&1 &

@@ -46,7 +46,13 @@ if [[ $where == screen ]]; then
 else
     pick=$(list $d/wall | menu wallpaper) || exit 0
     pkill -x papertoy; pkill -x linux-wallpaper
-    [[ $pick == off || ! -f $d/wall/$pick.glsl ]] && exit 0
+    if [[ $pick == off ]]; then # put the workspace's own wallpaper back (the shader replaced it, and Wallpaper Engine ones were stopped)
+        ws=$(hyprctl activeworkspace -j | jq -r .id)
+        w=$(grep "^w-$ws=" ~/.config/hypr/wallpaper-daemon/config/HDMI-A-1/defaults.conf | cut -d= -f2-) # shortcut: one monitor
+        [[ -f $w ]] && ~/.config/hypr/wallpaper-daemon/hyprpaper.sh HDMI-A-1 "$w" >/dev/null 2>&1
+        exit 0
+    fi
+    [[ -f $d/wall/$pick.glsl ]] || exit 0
     # shim: papertoy would otherwise sit below the bar's reserved area (see scripts-c/zone-1.c)
     LD_PRELOAD=$HOME/.config/hypr/scripts-c/zone-1.so setsid papertoy --frame-rate 30 "$d/wall/$pick.glsl" >/dev/null 2>&1 &
 fi

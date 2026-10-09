@@ -17,7 +17,7 @@ done
 
 # Apply wallpaper directly (hyprpaper 0.8+ no longer requires preload)
 hyprctl hyprpaper wallpaper "$monitor,$wallpaper"
-pkill -x linux-wallpaper # a Wallpaper Engine wallpaper was showing; killed only now so the static one is already there
+pkill -x linux-wallpaper; pkill -x papertoy # a Wallpaper Engine / shader wallpaper was showing; killed only now so the static one is already there
 
 sleep 0.3 # Brief settle to avoid stuttering (was 1s: dominated switch latency)
 
