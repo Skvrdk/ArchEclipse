@@ -22,8 +22,13 @@ run)
     id=$(sed -E 's/.*\[([0-9]+)\]\.[a-z]+$/\1/' <<<"$3")
     [ -d "$steam/workshop/content/431960/$id" ] || exit 1
     pgrep -af "linux-wallpaperengine.*--bg .*/$id\$" >/dev/null && exit 0 # already showing it (workspace switches call this again)
-    pkill -x mpvpaper; pkill -x papertoy; pkill -x linux-wallpaper
+    old=$(pgrep -x linux-wallpaper)
     setsid linux-wallpaperengine --silent --no-audio-processing --fps 30 --assets-dir "$steam/common/wallpaper_engine/assets" \
         --screen-root "$2" --bg "$steam/workshop/content/431960/$id" >/dev/null 2>&1 &
+    # Keep whatever is showing until the new wallpaper has its layer and first frame, so a switch never flashes the static one.
+    sleep 0.3; new=$(pgrep -nx linux-wallpaper)
+    for _ in $(seq 80); do hyprctl layers | grep -q "linux-wallpaperengine, pid: $new" && break; sleep 0.25; done
+    sleep 0.7
+    kill $old 2>/dev/null; pkill -x mpvpaper; pkill -x papertoy
     "$HOME/.config/hypr/theme/scripts/wal-theme.sh" "$3" >/dev/null 2>&1 ;;
 esac

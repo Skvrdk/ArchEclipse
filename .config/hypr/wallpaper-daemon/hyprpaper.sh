@@ -6,8 +6,6 @@ monitor=$1
 wallpaper=$2 # This is passed as an argument to the script
 
 case $wallpaper in */wallpaper-engine/*) exec "$hyprdir/wallpaper-daemon/wpe.sh" run "$monitor" "$wallpaper" ;; esac
-pkill -x linux-wallpaper # a Wallpaper Engine wallpaper was showing
-
 # Stop any running mpvpaper instance on this monitor when switching to static wallpaper
 # (kill first: fast, avoids a 1s stale video under the new static wallpaper)
 for pid in $(pgrep -x mpvpaper); do
@@ -18,6 +16,7 @@ done
 
 # Apply wallpaper directly (hyprpaper 0.8+ no longer requires preload)
 hyprctl hyprpaper wallpaper "$monitor,$wallpaper"
+pkill -x linux-wallpaper # a Wallpaper Engine wallpaper was showing; killed only now so the static one is already there
 
 sleep 0.3 # Brief settle to avoid stuttering (was 1s: dominated switch latency)
 

@@ -13,8 +13,6 @@ fi
 # unload any existing wallpaper on this monitor (hyprpaper 0.8+ no longer requires unload)
 # hyprctl hyprpaper unload "$monitor" >/dev/null 2>&1
 
-pkill -x linux-wallpaper # a Wallpaper Engine wallpaper was showing
-
 # Stop any existing mpvpaper instance on this monitor
 for pid in $(pgrep -x mpvpaper); do
     if tr '\0' ' ' < "/proc/$pid/cmdline" | grep -F -q "$monitor"; then
@@ -24,6 +22,8 @@ done
 
 # Start mpvpaper in background for animated/video wallpapers
 nohup mpvpaper -p -o "no-audio --loop --fs --panscan=1.0 --hwdec=auto-safe" "$monitor" "$wallpaper" >/dev/null 2>&1 &
+
+sleep 0.8; pkill -x linux-wallpaper # a Wallpaper Engine wallpaper was showing; killed after mpv is up
 
 sleep 0.3 # Brief settle to avoid stuttering (was 1s: dominated switch latency)
 
