@@ -8,3 +8,7 @@ window#waybar { background: alpha(@background, 0.88); color: @foreground; border
 #taskbar button:hover { background: alpha(@foreground, 0.16); }
 #taskbar button.active { background: alpha(@color4, 0.35); border-bottom: 2px solid @color4; }
 #tray, #pulseaudio, #clock { padding: 0 12px; }
+#custom-min, #custom-max, #custom-close { min-width: 34px; margin: 7px 3px; border-radius: 10px; padding: 0; font-size: 16px; background: alpha(@foreground, 0.08); }
+#custom-min:hover, #custom-max:hover { background: alpha(@color4, 0.4); }
+#custom-close { margin-right: 10px; }
+#custom-close:hover { background: #e5484d; color: #ffffff; }
