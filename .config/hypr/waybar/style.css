@@ -1,0 +1,10 @@
+@import "/home/pisun/.cache/cwal/colors-waybar.css";
+
+* { font-family: "JetBrainsMono Nerd Font"; font-size: 14px; border: none; border-radius: 0; min-height: 0; }
+window#waybar { background: alpha(@background, 0.88); color: @foreground; border-top: 1px solid alpha(@color4, 0.6); }
+#custom-start { font-size: 22px; padding: 0 16px; color: @color4; }
+#custom-start:hover { background: alpha(@color4, 0.25); }
+#taskbar button { padding: 2px 12px; margin: 5px 3px; border-radius: 10px; background: alpha(@foreground, 0.06); color: @foreground; }
+#taskbar button:hover { background: alpha(@foreground, 0.16); }
+#taskbar button.active { background: alpha(@color4, 0.35); border-bottom: 2px solid @color4; }
+#tray, #pulseaudio, #clock { padding: 0 12px; }

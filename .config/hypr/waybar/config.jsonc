@@ -1,0 +1,35 @@
+// KDE-style bottom panel for desktop mode (started by config/custom/desktop-mode.lua).
+{
+    "layer": "top",
+    "position": "bottom",
+    "height": 44,
+    "spacing": 6,
+    "margin": "0 0 0 0",
+    "modules-left": ["custom/start", "wlr/taskbar"],
+    "modules-right": ["tray", "pulseaudio", "clock"],
+    "custom/start": {
+        "format": "󰣇",
+        "tooltip": false,
+        "on-click": "qs -p ~/.config/quickshell/archeclipse ipc call bar toggleSearch"
+    },
+    "wlr/taskbar": {
+        "format": "{icon}  {title}",
+        "icon-size": 22,
+        "tooltip-format": "{title}",
+        "on-click": "activate",
+        "on-click-middle": "close",
+        "on-click-right": "minimize-raise",
+        "ignore-list": []
+    },
+    "tray": { "icon-size": 20, "spacing": 8 },
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰝟",
+        "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+        "on-click": "pavucontrol"
+    },
+    "clock": {
+        "format": "{:%H:%M  %d.%m}",
+        "tooltip-format": "{:%A, %d %B %Y}"
+    }
+}
