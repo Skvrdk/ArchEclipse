@@ -5,6 +5,5 @@ local s = os.getenv("HOME") .. "/.config/hypr/scripts/"
 hl.bind("SUPER + F9", hl.dsp.exec_cmd(s .. "shader-menu.sh"))
 hl.bind("SUPER + F10", hl.dsp.exec_cmd(s .. "spotify-theme.sh toggle"))
 hl.on("hyprland.start", function() hl.exec_cmd(s .. "spotify-theme.sh") end)
--- The NuPhy's F-row is media keys unless Fn is held, so the same two actions also live on letter keys.
+-- The NuPhy's F-row is media keys unless Fn is held, so the shader menu also lives on a letter key.
 hl.bind("SUPER + SHIFT + W", hl.dsp.exec_cmd(s .. "shader-menu.sh"))
-hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd(s .. "spotify-theme.sh toggle"))
