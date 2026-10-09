@@ -34,9 +34,12 @@ local function emit_windows()
     local visible = { [tostring(mon.active_workspace.name)] = true }
     if mon.active_special_workspace then visible[tostring(mon.active_special_workspace.name)] = true end
     local items = {}
+    local active = hl.get_active_window()
+    local active_addr = active and tostring(active.address) or ""
     for _, w in ipairs(hl.get_windows()) do
         if w.mapped and w.floating and w.fullscreen ~= 2 and not draws_own_buttons(w) and w.workspace and visible[tostring(w.workspace.name)] then
-            items[#items + 1] = string.format('{"a":"%s","x":%d,"y":%d,"w":%d,"h":%d}', tostring(w.address), w.at.x, w.at.y, w.size.x, w.size.y)
+            local title = string.gsub(tostring(w.title), '[%c"\\]', " ")
+            items[#items + 1] = string.format('{"a":"%s","x":%d,"y":%d,"w":%d,"h":%d,"t":"%s","f":%s}', tostring(w.address), w.at.x, w.at.y, w.size.x, w.size.y, title, tostring(tostring(w.address) == active_addr))
         end
     end
     local json = "[" .. table.concat(items, ",") .. "]"
@@ -51,6 +54,16 @@ local function emit_windows()
     end
 end
 
+-- The title strip sits right above a window; a window touching the top of the screen has no room for it, so move it down a bit.
+local function make_room(w)
+    if w.floating and w.at.y < 70 and not draws_own_buttons(w) and not fullscreen(w) then
+        local mon = hl.get_active_monitor()
+        local h = math.min(w.size.y, mon.height - 70 - 70)
+        hl.dispatch(hl.dsp.window.resize({ x = w.size.x, y = h, window = "address:" .. w.address }))
+        hl.dispatch(hl.dsp.window.move({ x = w.at.x, y = 70, window = "address:" .. w.address }))
+    end
+end
+
 local function set_mode(enable)
     on = enable
     if enable then
@@ -60,8 +73,11 @@ local function set_mode(enable)
                 toggle_float(w)
             end
         end
-        hl.exec_cmd("waybar -c " .. home .. "/.config/hypr/waybar/config.jsonc -s " .. home .. "/.config/hypr/waybar/style.css")
-        hl.exec_cmd(qs_deco)
+        for _, w in ipairs(hl.get_windows()) do
+            if w.mapped then make_room(w) end
+        end
+        hl.exec_cmd("pkill -x waybar; waybar -c " .. home .. "/.config/hypr/waybar/config.jsonc -s " .. home .. "/.config/hypr/waybar/style.css")
+        hl.exec_cmd(qs_deco .. " kill; " .. qs_deco) -- kill first: a config reload forgets that one is already running
         deco_timer = hl.timer(emit_windows, { timeout = 33, type = "repeat" })
     else
         if deco_timer then

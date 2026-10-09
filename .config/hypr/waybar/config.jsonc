@@ -6,7 +6,7 @@
     "spacing": 6,
     "margin": "0 14 10 14",
     "modules-left": ["custom/start", "wlr/taskbar"],
-    "modules-right": ["tray", "pulseaudio", "clock", "custom/min", "custom/max", "custom/close"],
+    "modules-right": ["tray", "pulseaudio", "clock"],
     "custom/start": {
         "format": "󰣇",
         "tooltip": false,
@@ -27,25 +27,6 @@
         "format-muted": "󰝟",
         "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
         "on-click": "pavucontrol"
-    },
-    // Window controls for the focused window (Hyprland has no minimize: it goes to a hidden workspace, the taskbar brings it back).
-    "custom/min": {
-        "format": "󰖰",
-        "tooltip-format": "Minimize",
-        "tooltip": true,
-        "on-click": "hyprctl dispatch 'hl.dsp.window.move({ workspace = \"special:min\", follow = false })'"
-    },
-    "custom/max": {
-        "format": "󰖯",
-        "tooltip-format": "Maximize",
-        "tooltip": true,
-        "on-click": "hyprctl dispatch 'hl.dsp.window.fullscreen({ action = \"toggle\", mode = \"maximized\" })'"
-    },
-    "custom/close": {
-        "format": "󰖭",
-        "tooltip-format": "Close",
-        "tooltip": true,
-        "on-click": "hyprctl dispatch 'hl.dsp.window.close()'"
     },
     "clock": {
         "format": "{:%H:%M  %d.%m}",
