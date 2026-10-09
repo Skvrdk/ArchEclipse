@@ -1,14 +1,26 @@
 @import "/home/pisun/.cache/cwal/colors-waybar.css";
 
 * { font-family: "JetBrainsMono Nerd Font"; font-size: 14px; border: none; border-radius: 0; min-height: 0; }
-window#waybar { background: alpha(@background, 0.88); color: @foreground; border-top: 1px solid alpha(@color4, 0.6); }
-#custom-start { font-size: 22px; padding: 0 16px; color: @color4; }
-#custom-start:hover { background: alpha(@color4, 0.25); }
-#taskbar button { padding: 2px 12px; margin: 5px 3px; border-radius: 10px; background: alpha(@foreground, 0.06); color: @foreground; }
-#taskbar button:hover { background: alpha(@foreground, 0.16); }
-#taskbar button.active { background: alpha(@color4, 0.35); border-bottom: 2px solid @color4; }
-#tray, #pulseaudio, #clock { padding: 0 12px; }
-#custom-min, #custom-max, #custom-close { min-width: 34px; margin: 7px 3px; border-radius: 10px; padding: 0; font-size: 16px; background: alpha(@foreground, 0.08); }
+
+/* Floating islands, like the top bar: the bar itself is transparent, the two halves are rounded translucent pills. */
+window#waybar { background: transparent; color: @foreground; }
+.modules-left, .modules-right {
+    background: alpha(@background, 0.82);
+    border: 1px solid alpha(@color4, 0.35);
+    border-radius: 20px;
+    padding: 0 8px;
+}
+
+#custom-start { font-size: 20px; padding: 0 14px 0 10px; color: @color4; }
+#custom-start:hover { color: @foreground; }
+
+#taskbar button { padding: 2px 12px; margin: 7px 3px; border-radius: 12px; background: transparent; color: alpha(@foreground, 0.75); }
+#taskbar button:hover { background: alpha(@foreground, 0.12); color: @foreground; }
+#taskbar button.active { background: alpha(@color4, 0.30); color: @foreground; box-shadow: inset 0 -2px @color4; }
+
+#tray, #pulseaudio, #clock { padding: 0 10px; color: @foreground; }
+
+#custom-min, #custom-max, #custom-close { min-width: 32px; margin: 10px 2px; border-radius: 10px; padding: 0; font-size: 15px; background: alpha(@foreground, 0.07); }
 #custom-min:hover, #custom-max:hover { background: alpha(@color4, 0.4); }
-#custom-close { margin-right: 10px; }
+#custom-close { margin-right: 4px; }
 #custom-close:hover { background: #e5484d; color: #ffffff; }
