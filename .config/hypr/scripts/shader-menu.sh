@@ -2,7 +2,38 @@
 # Two-step menu: pick where (screen / wallpaper), then the shader. Screen shaders: config/shaders/*.glsl (post-process);
 # wallpaper shaders: config/shaders/wall/*.glsl (Shadertoy format, run by papertoy). Any screen shader stops direct scanout: off for games.
 d=~/.config/hypr/config/shaders
-menu() { fuzzel --dmenu -p "$1 "; }
+# Dark popup in the current cwal palette (follows the wallpaper / Spotify colours).
+hex() { local c; c=$(grep -m1 "^\$$1 = " ~/.cache/cwal/colors-hyprland.conf | tr -dc '0-9,'); IFS=, read -r r g b <<<"$c"; printf '%02x%02x%02x' "$r" "$g" "$b"; }
+bg=$(hex background); fg=$(hex foreground); ac=$(hex color12)
+cfg=${XDG_RUNTIME_DIR:-/tmp}/shader-menu-fuzzel.ini
+cat >"$cfg" <<INI
+[main]
+font=JetBrainsMono Nerd Font:size=13
+width=26
+lines=9
+horizontal-pad=26
+vertical-pad=20
+inner-pad=10
+line-height=28
+layer=overlay
+[colors]
+background=${bg}f2
+text=${fg}ff
+prompt=${ac}ff
+input=${fg}ff
+match=${ac}ff
+placeholder=${fg}80
+selection=${ac}ff
+selection-text=${bg}ff
+selection-match=${bg}ff
+border=${ac}ff
+[border]
+width=2
+radius=18
+[dmenu]
+exit-immediately-if-empty=no
+INI
+menu() { local in n; in=$(cat); n=$(wc -l <<<"$in"); fuzzel --config "$cfg" --dmenu --lines $(( n < 9 ? n : 9 )) -p "󰹑  $1  " <<<"$in"; }
 list() { { echo off; basename -a "$1"/*.glsl | sed 's/\.glsl$//'; }; }
 where=$(printf 'screen\nwallpaper\n' | menu where) || exit 0
 if [[ $where == screen ]]; then
