@@ -1,4 +1,5 @@
-// KDE-style bottom panel for desktop mode (started by config/custom/desktop-mode.lua).
+// KDE-style bottom panel (floating islands: start button, taskbar, tray, volume, clock). Not started automatically: run
+//   waybar -c ~/.config/hypr/waybar/config.jsonc -s ~/.config/hypr/waybar/style.css
 {
     "layer": "top",
     "position": "bottom",
